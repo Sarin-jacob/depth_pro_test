@@ -15,6 +15,7 @@ import cv2
 import numpy as np
 import torch
 from depth_pro import create_model_and_transforms, load_rgb
+from scripts.ckpoint import OUT, main as load_checkpoint
 
 # --- Constants ---
 WINDOW_NAME = "DepthPro Interactive Viewer"
@@ -282,6 +283,7 @@ def main() -> None:
         print(f"Error: Specified path target does not exist: {image_path}")
         sys.exit(1)
 
+    if not OUT.exists():load_checkpoint()
     # Inference step running strictly on CPU
     try:
         img_bgr, depth_colored, depth_map, focal_length = run_inference(image_path)
