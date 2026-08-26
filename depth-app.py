@@ -57,11 +57,14 @@ class UnderwaterDepthApp:
         self.dp_model = None
         self.dp_transform = None
 
+        # Store view options for toggling
+        self.view_options = ["Side-by-Side", "Overlay", "RGB Only", "Depth Only"]
+
         # Build GUI Control Panel
         self.setup_control_panel()
 
         # Build OpenCV Display Window
-        self.window_name = "Underwater Depth Estimation (Press 'H' to toggle text)"
+        self.window_name = "Underwater Depth Estimation (Press 'H' to toggle text, 'V' to toggle view)"
         cv2.namedWindow(self.window_name, cv2.WINDOW_NORMAL)
         cv2.setMouseCallback(self.window_name, self.on_mouse)
 
@@ -98,8 +101,7 @@ class UnderwaterDepthApp:
 
         # 3. View Mode Dropdown
         tk.Label(self.root, text="Display View Mode:", font=('Helvetica', 10, 'bold')).pack(anchor='w', **padding)
-        view_options = ["Side-by-Side", "Overlay", "RGB Only", "Depth Only"]
-        self.view_cb = ttk.Combobox(self.root, values=view_options, state="readonly")
+        self.view_cb = ttk.Combobox(self.root, values=self.view_options, state="readonly")
         self.view_cb.set(DEFAULT_VIEW_MODE)
         self.view_cb.pack(fill='x', **padding)
         self.view_cb.bind("<<ComboboxSelected>>", lambda e: setattr(self, 'view_mode', self.view_cb.get()))
@@ -276,6 +278,13 @@ class UnderwaterDepthApp:
                 break
             elif key == ord('h'):
                 self.show_ui = not self.show_ui
+            elif key == ord('v'):
+                # Cycle view mode
+                current_index = self.view_options.index(self.view_mode)
+                next_index = (current_index + 1) % len(self.view_options)
+                self.view_mode = self.view_options[next_index]
+                # Sync Tkinter dropdown
+                self.view_cb.set(self.view_mode)
 
         self.cap.release()
         cv2.destroyAllWindows()
